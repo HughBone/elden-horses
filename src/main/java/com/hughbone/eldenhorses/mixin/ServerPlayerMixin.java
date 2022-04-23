@@ -40,6 +40,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
         HorseEntity eldenHorse2 = eldenHorse;
         ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
         eldenHorse2.world = player.world; // Update dimension
+        eldenHorse2.fallDistance = player.fallDistance;
 
         // Spawn elden horse
         eldenHorse2.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
@@ -67,6 +68,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
             return;
         }
         eldenHorse = horse;
+        ((ServerPlayerEntity)(Object)this).fallDistance = eldenHorse.fallDistance;
         horse.remove(Entity.RemovalReason.DISCARDED);
         ((EntityExt) eldenHorse).undoRemove();
 

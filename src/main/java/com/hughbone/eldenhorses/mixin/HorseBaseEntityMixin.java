@@ -3,7 +3,6 @@ package com.hughbone.eldenhorses.mixin;
 import com.hughbone.eldenhorses.interfaces.EldenExt;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.HorseEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +18,8 @@ import static com.hughbone.eldenhorses.EldenHorses.NETHERITE_HORSE_ARMOR;
 public abstract class HorseBaseEntityMixin implements EldenExt{
 
     @Shadow protected float jumpStrength;
+    @Shadow protected abstract void setHorseFlag(int bitmask, boolean flag);
+
     private boolean doubleJumped = false;
     private boolean eldenArmor = false;
 
@@ -30,9 +31,11 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
         eldenArmor = ((HorseEntity)(Object)this).getArmorType().getItem().equals(NETHERITE_HORSE_ARMOR.asItem());
     }
 
-    @Inject(method="onInventoryChanged", at = @At("HEAD"))
-    public void onInventoryChanged(Inventory sender, CallbackInfo ci) {
-        // Play fancy sound and spawn particles
+    @Inject(method="isAngry", at = @At("RETURN"), cancellable = true)
+    public void isAngry(CallbackInfoReturnable<Boolean> cir) {
+        if (hasEldenArmor()) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method="writeCustomDataToNbt", at = @At("HEAD"))
@@ -48,7 +51,7 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
     @Inject(method = "computeFallDamage", at = @At("RETURN"), cancellable = true)
     private void computeFallDamage(float fallDistance, float damageMultiplier, CallbackInfoReturnable<Integer> cir) {
         if (hasEldenArmor()) {
-            cir.setReturnValue(cir.getReturnValue() - 6);
+            cir.setReturnValue(cir.getReturnValue() - 4);
         }
     }
 

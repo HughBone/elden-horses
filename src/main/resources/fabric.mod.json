@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "eldenhorses",
+  "id": "elden_horses",
   "version": "${version}",
 
   "name": "Elden Horses",
@@ -14,7 +14,7 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/eh/icon.png",
+  "icon": "assets/elden_horses/icon.png",
 
   "environment": "*",
   "entrypoints": {
