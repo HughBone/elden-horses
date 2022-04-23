@@ -1,10 +1,12 @@
 package com.hughbone.eldenhorses.mixin;
 
 import com.hughbone.eldenhorses.interfaces.EldenExt;
+import com.hughbone.eldenhorses.interfaces.ServerPlayerExt;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.HorseScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,6 +22,9 @@ public abstract class HorseScreenHandlerMixin {
     public void transferSlot(PlayerEntity player, CallbackInfo ci) {
         if (entity instanceof HorseEntity horse) {
             ((EldenExt) horse).updateEldenArmor();
+            if (player instanceof ServerPlayerEntity p) {
+                ((ServerPlayerExt) p).updatePlayerHorse(); // Set to null if has armor but no player riding
+            }
         }
     }
 

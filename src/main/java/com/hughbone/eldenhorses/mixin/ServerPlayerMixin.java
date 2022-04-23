@@ -42,6 +42,15 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
         player.getWorld().tryLoadEntity(eldenHorse2);
     }
 
+    public void updatePlayerHorse() {
+        if (eldenHorse != null) {
+        // Set to null if has armor but no rider
+            if (((EldenExt) eldenHorse).hasEldenArmor() && !eldenHorse.hasPlayerRider()) {
+                eldenHorse = null;
+            }
+        }
+    }
+
     public void storeHorse(HorseEntity horse) {
         if (eldenHorse != null) {
             if (!eldenHorse.equals(horse))
