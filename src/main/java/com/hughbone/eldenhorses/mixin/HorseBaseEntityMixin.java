@@ -1,14 +1,11 @@
 package com.hughbone.eldenhorses.mixin;
 
-import com.hughbone.eldenhorses.EldenExt;
-import net.minecraft.client.render.entity.HorseEntityRenderer;
+import com.hughbone.eldenhorses.interfaces.EldenExt;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.StackReference;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,14 +19,15 @@ import static com.hughbone.eldenhorses.EldenHorses.NETHERITE_HORSE_ARMOR;
 public abstract class HorseBaseEntityMixin implements EldenExt{
 
     @Shadow protected float jumpStrength;
-    private boolean eldenArmor = false;
     private boolean doubleJumped = false;
+    private boolean eldenArmor = false;
+
     public boolean hasEldenArmor() {
-        //System.out.println(eldenArmor);
         return eldenArmor;
     }
-    public void setEldenArmor(boolean ea) {
-        eldenArmor = ea;
+
+    public void updateEldenArmor() {
+        eldenArmor = ((HorseEntity)(Object)this).getArmorType().getItem().equals(NETHERITE_HORSE_ARMOR.asItem());
     }
 
     @Inject(method="onInventoryChanged", at = @At("HEAD"))
@@ -50,7 +48,6 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
     @Inject(method = "computeFallDamage", at = @At("RETURN"), cancellable = true)
     private void computeFallDamage(float fallDistance, float damageMultiplier, CallbackInfoReturnable<Integer> cir) {
         if (hasEldenArmor()) {
-            System.out.println("Has elden armor!");
             cir.setReturnValue(cir.getReturnValue() - 6);
         }
     }
@@ -59,22 +56,18 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
     private void test(CallbackInfo ci) {
         HorseBaseEntity hbe = (HorseBaseEntity)(Object)this;
 
-        if (((EldenExt) hbe).hasEldenArmor()) {
-
+        if (hbe.hasPlayerRider() && hasEldenArmor()) {
             if (hbe.isOnGround() && !hbe.isInAir()) doubleJumped = false;
 
             if (!doubleJumped && jumpStrength > 0.0F && hbe.isInAir() && !hbe.isOnGround())  {
                 hbe.setVelocity(hbe.getVelocity().x, hbe.getJumpStrength(), hbe.getVelocity().z);
-
                 float h = MathHelper.sin(hbe.getYaw() * 0.017453292F);
                 float i = MathHelper.cos(hbe.getYaw() * 0.017453292F);
                 hbe.setVelocity(hbe.getVelocity().add((double)(-0.4F * h * jumpStrength), 0.0, (double)(0.4F * i * jumpStrength)));
 
                 doubleJumped = true;
             }
-
         }
-
     }
 
 }

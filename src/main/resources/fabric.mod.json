@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "com.hughbone.eldenhorses.EldenHorses"
+    ],
+    "client": [
+      "com.hughbone.eldenhorses.EldenHorsesClient"
     ]
   },
   "mixins": [
