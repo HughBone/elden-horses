@@ -9,6 +9,7 @@
     "HorseBaseEntityMixin",
     "HorseScreenHandlerMixin",
     "PlayerManagerMixin",
+    "PlayerMixin",
     "ServerPlayerMixin"
   ],
   "client": [
