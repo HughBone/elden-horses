@@ -23,6 +23,10 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
     @Shadow public abstract ServerWorld getWorld();
     private HorseEntity eldenHorse = null;
 
+    public HorseEntity getHorse() {
+        return eldenHorse;
+    }
+
     public void summonHorse(boolean mountPlayer) {
         if (eldenHorse != null) {
             if (!((EldenExt)eldenHorse).hasEldenArmor())

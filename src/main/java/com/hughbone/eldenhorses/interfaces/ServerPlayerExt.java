@@ -6,4 +6,5 @@ public interface ServerPlayerExt {
     void storeHorse(HorseEntity horse);
     void summonHorse(boolean mountPlayer);
     void updatePlayerHorse();
+    HorseEntity getHorse();
 }
