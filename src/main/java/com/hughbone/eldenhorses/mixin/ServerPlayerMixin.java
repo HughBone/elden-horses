@@ -35,7 +35,9 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
 
         HorseEntity eldenHorse2 = eldenHorse;
         ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+        eldenHorse2.world = player.world; // Update dimension
 
+        // Spawn elden horse
         eldenHorse2.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
         if (mountPlayer) player.startRiding(eldenHorse2, true);
         eldenHorse2.setVelocity(player.getVelocity());

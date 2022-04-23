@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class EldenHorses implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("elden_horses");
-	public static final EldenHorseArmor NETHERITE_HORSE_ARMOR = new EldenHorseArmor(14,"netherite",new FabricItemSettings().maxCount(1).group(ItemGroup.MISC));
+	public static final EldenHorseArmor NETHERITE_HORSE_ARMOR = new EldenHorseArmor(15,"netherite",new FabricItemSettings().maxCount(1).group(ItemGroup.MISC).fireproof());
 
 	@Override
 	public void onInitialize() {
