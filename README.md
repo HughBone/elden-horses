@@ -1,9 +1,14 @@
-# Fabric Example Mod
+# Elden Horses
+Minecraft Fabric Mod that adds netherite horse armor. Once equipped, horses obtain abilities similar to those found in Elden Ring. [Curseforge Page]()
 
-## Setup
+## Abilties
+* Double Jump
+* Hotkey to summon horse
+* Horse disappears on dismount
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+## Crafting
+![](readme-images/crafting.png)
+![](readme-images/smithing.png)
 
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+## Credits
+Netherite horse armor textures taken from [Netherite Plus](https://github.com/OroArmor/Netherite-Plus-Mod) by OroArmor
