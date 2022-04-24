@@ -5,6 +5,6 @@ import net.minecraft.entity.passive.HorseEntity;
 public interface ServerPlayerExt {
     void storeHorse(HorseEntity horse);
     void summonHorse(boolean mountPlayer);
-    void updatePlayerHorse();
+    void updatePlayerHorse(HorseEntity horse);
     HorseEntity getHorse();
 }

@@ -23,7 +23,7 @@ public abstract class HorseScreenHandlerMixin {
         if (entity instanceof HorseEntity horse) {
             ((EldenExt) horse).updateEldenArmor();
             if (player instanceof ServerPlayerEntity p) {
-                ((ServerPlayerExt) p).updatePlayerHorse(); // Set to null if has armor but no player riding
+                ((ServerPlayerExt) p).updatePlayerHorse(horse); // Set to null if has armor but no player riding
             }
         }
     }

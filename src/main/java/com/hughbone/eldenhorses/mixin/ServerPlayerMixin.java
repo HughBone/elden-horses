@@ -49,10 +49,10 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
         player.getWorld().tryLoadEntity(eldenHorse2);
     }
 
-    public void updatePlayerHorse() {
+    public void updatePlayerHorse(HorseEntity horse) {
         if (eldenHorse != null) {
-        // Set to null if has armor but no rider
-            if (((EldenExt) eldenHorse).hasEldenArmor() && !eldenHorse.hasPlayerRider()) {
+            // Set to null if has armor but no rider
+            if (((EldenExt) eldenHorse).hasEldenArmor() && !eldenHorse.hasPlayerRider() && eldenHorse.equals(horse)) {
                 eldenHorse = null;
             }
         }
@@ -60,8 +60,10 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
 
     public void storeHorse(HorseEntity horse) {
         if (eldenHorse != null) {
-            if (!eldenHorse.equals(horse))
+            if (!eldenHorse.equals(horse)) {
+                this.sendMessage(Text.of("Replaced Old Horse!"), true);
                 summonHorse(false);
+            }
         }
         if (horse.getRemovalReason() != null) {
             eldenHorse = null;
@@ -103,8 +105,14 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
         if (mountedEntity instanceof HorseEntity horse) {
             if (((EldenExt) horse).hasEldenArmor()) {
                 (new Thread(() -> {
-                    while (player.hasVehicle()) {
-                        try { Thread.sleep(100); } catch (InterruptedException ignored) {}
+                    while (true) {
+                        if (player.hasVehicle()) {
+                            if (player.getVehicle().equals(eldenHorse)) {
+                                try { Thread.sleep(50); } catch (InterruptedException ignored) {}
+                                continue;
+                            }
+                        }
+                        break;
                     }
                     storeHorse(horse);
                 })).start();
