@@ -18,8 +18,6 @@ import static com.hughbone.eldenhorses.EldenHorses.NETHERITE_HORSE_ARMOR;
 public abstract class HorseBaseEntityMixin implements EldenExt{
 
     @Shadow protected float jumpStrength;
-    @Shadow protected abstract void setHorseFlag(int bitmask, boolean flag);
-
     private boolean doubleJumped = false;
     private boolean eldenArmor = false;
 
@@ -30,7 +28,6 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
     public void updateEldenArmor() {
         eldenArmor = ((HorseEntity)(Object)this).getArmorType().getItem().equals(NETHERITE_HORSE_ARMOR.asItem());
     }
-
     @Inject(method="isAngry", at = @At("RETURN"), cancellable = true)
     public void isAngry(CallbackInfoReturnable<Boolean> cir) {
         if (hasEldenArmor()) {
@@ -56,7 +53,7 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
     }
 
     @Inject(method = "travel", at = @At("HEAD"))
-    private void test(CallbackInfo ci) {
+    private void travel(CallbackInfo ci) {
         HorseBaseEntity hbe = (HorseBaseEntity)(Object)this;
 
         if (hbe.hasPlayerRider() && hasEldenArmor()) {

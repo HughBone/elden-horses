@@ -22,8 +22,10 @@ public abstract class HorseScreenHandlerMixin {
     public void transferSlot(PlayerEntity player, CallbackInfo ci) {
         if (entity instanceof HorseEntity horse) {
             ((EldenExt) horse).updateEldenArmor();
-            if (player instanceof ServerPlayerEntity p) {
-                ((ServerPlayerExt) p).updatePlayerHorse(horse); // Set to null if has armor but no player riding
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                if (horse.equals(serverPlayer.getVehicle()) && ((EldenExt) horse).hasEldenArmor()) {
+                    ((ServerPlayerExt) serverPlayer).storeHorse(horse);
+                }
             }
         }
     }

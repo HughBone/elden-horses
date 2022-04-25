@@ -5,6 +5,8 @@ import com.hughbone.eldenhorses.interfaces.EntityExt;
 import com.hughbone.eldenhorses.interfaces.ServerPlayerExt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,6 +17,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerMixin implements ServerPlayerExt {
@@ -23,21 +26,15 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
     @Shadow public abstract ServerWorld getWorld();
     private HorseEntity eldenHorse = null;
 
-    public HorseEntity getHorse() {
-        return eldenHorse;
-    }
+    public HorseEntity getHorse() { return eldenHorse; }
 
     public void summonHorse(boolean mountPlayer) {
-        if (eldenHorse != null) {
-            if (!((EldenExt)eldenHorse).hasEldenArmor())
-                eldenHorse = null;
-        }
-        if (eldenHorse == null) {
+        HorseEntity eldenHorse2 = eldenHorse; // Prevent concurrent modification crash
+        if (eldenHorse2 == null) {
             this.sendMessage(Text.of("No Horse Found!"), true);
             return;
         }
 
-        HorseEntity eldenHorse2 = eldenHorse;
         ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
         eldenHorse2.world = player.world; // Update dimension
         eldenHorse2.fallDistance = player.fallDistance;
@@ -47,36 +44,26 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
         if (mountPlayer) player.startRiding(eldenHorse2, true);
         eldenHorse2.setVelocity(player.getVelocity());
         player.getWorld().tryLoadEntity(eldenHorse2);
-    }
-
-    public void updatePlayerHorse(HorseEntity horse) {
-        if (eldenHorse != null) {
-            // Set to null if has armor but no rider
-            if (((EldenExt) eldenHorse).hasEldenArmor() && !eldenHorse.hasPlayerRider() && eldenHorse.equals(horse)) {
-                eldenHorse = null;
-            }
-        }
+        // Add glowing effect to old horse if replaced
+        if (!mountPlayer) eldenHorse2.addStatusEffect(
+                new StatusEffectInstance(StatusEffects.GLOWING,60,0,false,false));
     }
 
     public void storeHorse(HorseEntity horse) {
         if (eldenHorse != null) {
-            if (!eldenHorse.equals(horse)) {
-                this.sendMessage(Text.of("Replaced Old Horse!"), true);
-                summonHorse(false);
-            }
+            if (eldenHorse.getUuid().equals(horse.getUuid())) return;
+
+            this.sendMessage(Text.of("[Elden Horses]: Replaced Old Horse."), false);
+            summonHorse(false); // Summon old horse if new one found
         }
         if (horse.getRemovalReason() != null) {
             eldenHorse = null;
             return;
         }
         eldenHorse = horse;
-        ((ServerPlayerEntity)(Object)this).fallDistance = eldenHorse.fallDistance;
-        horse.remove(Entity.RemovalReason.DISCARDED);
-        ((EntityExt) eldenHorse).undoRemove();
-
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     public void readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
         NbtCompound horseNbt = nbt.getCompound("Elden_Horse");
         if (!horseNbt.isEmpty()) {
@@ -86,39 +73,33 @@ public abstract class ServerPlayerMixin implements ServerPlayerExt {
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
     public void writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (eldenHorse != null) {
-            if (!((EldenExt)eldenHorse).hasEldenArmor()) {
-                eldenHorse = null;
-                return;
-            }
+        if (eldenHorse != null && !((ServerPlayerEntity)(Object)this).hasVehicle()) {
             NbtCompound tag = new NbtCompound();
             eldenHorse.saveSelfNbt(tag);
             nbt.put("Elden_Horse", tag);
         }
     }
 
-    @Inject(method = "stopRiding", at = @At("HEAD"))
-    public void stopRiding(CallbackInfo ci) {
-        ServerPlayerEntity player = ((ServerPlayerEntity)(Object)this);
-        Entity mountedEntity = player.getVehicle();
-
-        if (mountedEntity instanceof HorseEntity horse) {
+    @Inject(method = "startRiding", at = @At("TAIL"))
+    public void startRiding(Entity entity, boolean force, CallbackInfoReturnable<Boolean> cir) {
+        if (entity instanceof HorseEntity horse) {
             if (((EldenExt) horse).hasEldenArmor()) {
-                (new Thread(() -> {
-                    while (true) {
-                        if (player.hasVehicle()) {
-                            if (player.getVehicle().equals(eldenHorse)) {
-                                try { Thread.sleep(50); } catch (InterruptedException ignored) {}
-                                continue;
-                            }
-                        }
-                        break;
-                    }
-                    storeHorse(horse);
-                })).start();
+                storeHorse(horse);
             }
         }
     }
 
+    @Inject(method = "stopRiding", at = @At("TAIL"))
+    public void stopRiding(CallbackInfo ci) {
+        if (eldenHorse == null) return;
+
+        if (!((EldenExt) eldenHorse).hasEldenArmor() || eldenHorse.getRemovalReason() != null) {
+            eldenHorse = null;
+            return;
+        }
+        eldenHorse.remove(Entity.RemovalReason.DISCARDED);
+        ((EntityExt) eldenHorse).undoRemove();  // Set removalReason to null so that horse can be spawned
+        ((ServerPlayerEntity)(Object)this).fallDistance = eldenHorse.fallDistance;
+    }
 
 }
