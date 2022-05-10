@@ -1,5 +1,5 @@
 # Elden Horses
-Minecraft Fabric Mod that adds netherite horse armor. Once equipped, horses obtain abilities similar to those found in Elden Ring. [Curseforge Page]()
+Minecraft Fabric Mod that adds netherite horse armor. Once equipped, horses obtain abilities similar to those found in Elden Ring. [Curseforge Page](https://www.curseforge.com/minecraft/mc-mods/elden-horses)
 
 ## Abilties
 * Double Jump

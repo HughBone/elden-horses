@@ -4,17 +4,17 @@
   "version": "${version}",
 
   "name": "Elden Horses",
-  "description": "",
+  "description": "Elden Ring Horses But In Minecraft",
   "authors": [
     "HughBone"
   ],
   "contact": {
-    "homepage": "",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/elden-horses",
     "sources": "https://github.com/HughBone/elden-horses"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/elden_horses/icon.png",
+  "license": "MIT",
+  "icon": "assets/elden_horses/icon.jpg",
 
   "environment": "*",
   "entrypoints": {
