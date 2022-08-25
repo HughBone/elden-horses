@@ -2,7 +2,7 @@ package com.hughbone.eldenhorses.mixin;
 
 import com.hughbone.eldenhorses.interfaces.EldenExt;
 import com.hughbone.eldenhorses.interfaces.ServerPlayerExt;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.HorseScreenHandler;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HorseScreenHandler.class)
 public abstract class HorseScreenHandlerMixin {
-    @Shadow @Final private HorseBaseEntity entity;
+    @Shadow @Final private AbstractHorseEntity entity;
 
     @Inject(method = "close", at = @At("HEAD"))
     public void transferSlot(PlayerEntity player, CallbackInfo ci) {

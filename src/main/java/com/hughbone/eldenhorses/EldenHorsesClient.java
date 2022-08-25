@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class EldenHorsesClient implements ClientModInitializer {
@@ -33,7 +33,7 @@ public class EldenHorsesClient implements ClientModInitializer {
 
             if (!summonCooldown && keyBinding.isPressed()) {
                 if (client.player.hasVehicle()) {
-                    client.player.sendMessage(new LiteralText("Dismount to summon!"), true);
+                    client.player.sendMessage(Text.of("Dismount to summon!"), true);
                     return;
                 }
                 // Summon steed
@@ -43,7 +43,7 @@ public class EldenHorsesClient implements ClientModInitializer {
                 try {
                     ClientPlayNetworking.send(identifier, buf);
                 } catch (IllegalStateException e) {
-                    client.player.sendMessage(new LiteralText("Failed: Mod Not On Server?"), true);
+                    client.player.sendMessage(Text.of("Failed: Mod Not On Server?"), true);
                     e.printStackTrace();
                 }
 

@@ -1,7 +1,7 @@
 package com.hughbone.eldenhorses.mixin;
 
 import com.hughbone.eldenhorses.interfaces.EldenExt;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.hughbone.eldenhorses.EldenHorses.NETHERITE_HORSE_ARMOR;
 
-@Mixin(HorseBaseEntity.class)
+@Mixin(AbstractHorseEntity.class)
 public abstract class HorseBaseEntityMixin implements EldenExt{
 
     @Shadow protected float jumpStrength;
@@ -54,16 +54,16 @@ public abstract class HorseBaseEntityMixin implements EldenExt{
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(CallbackInfo ci) {
-        HorseBaseEntity hbe = (HorseBaseEntity)(Object)this;
+        AbstractHorseEntity ahe = (AbstractHorseEntity)(Object)this;
 
-        if (hbe.hasPlayerRider() && hasEldenArmor()) {
-            if (hbe.isOnGround() && !hbe.isInAir()) doubleJumped = false;
+        if (ahe.hasPlayerRider() && hasEldenArmor()) {
+            if (ahe.isOnGround() && !ahe.isInAir()) doubleJumped = false;
 
-            if (!doubleJumped && jumpStrength > 0.0F && hbe.isInAir() && !hbe.isOnGround())  {
-                hbe.setVelocity(hbe.getVelocity().x, hbe.getJumpStrength(), hbe.getVelocity().z);
-                float h = MathHelper.sin(hbe.getYaw() * 0.017453292F);
-                float i = MathHelper.cos(hbe.getYaw() * 0.017453292F);
-                hbe.setVelocity(hbe.getVelocity().add((double)(-0.4F * h * jumpStrength), 0.0, (double)(0.4F * i * jumpStrength)));
+            if (!doubleJumped && jumpStrength > 0.0F && ahe.isInAir() && !ahe.isOnGround())  {
+                ahe.setVelocity(ahe.getVelocity().x, ahe.getJumpStrength(), ahe.getVelocity().z);
+                float h = MathHelper.sin(ahe.getYaw() * 0.017453292F);
+                float i = MathHelper.cos(ahe.getYaw() * 0.017453292F);
+                ahe.setVelocity(ahe.getVelocity().add((double)(-0.4F * h * jumpStrength), 0.0, (double)(0.4F * i * jumpStrength)));
 
                 doubleJumped = true;
             }
